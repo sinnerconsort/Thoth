@@ -208,3 +208,16 @@ body.palimpsest-lock { overflow: hidden !important; }
 #palimpsest-cover .cover-open:active{background:var(--spectral-glow);}
 
 @media (prefers-reduced-motion:reduce){#palimpsest-cover .rot,#palimpsest-cover .hubglow,#palimpsest-cover .glyph,#palimpsest-cover .rays{animation:none !important;}}
+
+/* swipe / reroll control on the current beat */
+.palimpsest-swipe{ display:flex; align-items:center; justify-content:center; gap:16px;
+  margin:14px 0 2px; color:#6fa3c0; font-size:15px; user-select:none; }
+.palimpsest-swarrow{ cursor:pointer; padding:4px 12px; font-size:20px; line-height:1; }
+.palimpsest-swarrow:active{ color:#9fc8e0; }
+.palimpsest-swn{ font-size:11px; letter-spacing:2px; color:#7d7b73; min-width:54px; text-align:center; }
+.palimpsest-reroll{ cursor:pointer; padding:4px 10px; font-size:16px; color:#7d7b73; }
+.palimpsest-reroll:active{ color:#cfae6e; }
+
+/* "the book is writing…" indicator */
+#palimpsest-writing{ animation:pmp-pulse 1.3s ease-in-out infinite; }
+@keyframes pmp-pulse{ 0%,100%{opacity:.3;} 50%{opacity:1;} }
