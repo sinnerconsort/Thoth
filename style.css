@@ -1,0 +1,115 @@
+/* CYOA Shell — gamebook aesthetic, mobile-first.
+   Palette pulled from the reference: near-black ground, parchment-grey text,
+   a single muted slate-blue for choices, amber only for "locked" warnings. */
+
+#cyoa-overlay {
+    position: fixed; inset: 0;
+    display: none;                 /* flex when open */
+    align-items: stretch; justify-content: center;
+    background: #0c0c0e;
+    color: #d6d4cc;
+    font-family: Georgia, "Times New Roman", serif;
+    overflow: hidden;
+}
+
+.cyoa-frame {
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 680px; height: 100%;
+    border-left: 1px solid #1c1c20; border-right: 1px solid #1c1c20;
+    background: #0f0f12;
+}
+
+/* top + bottom bars: small-caps, wide tracking */
+.cyoa-topbar, .cyoa-footer {
+    flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #8a8880;
+}
+.cyoa-footer { justify-content: center; gap: 28px; border-top: 1px solid #1c1c20; }
+.cyoa-topbar { border-bottom: 1px solid #1c1c20; }
+.cyoa-close { cursor: pointer; color: #8a8880; font-size: 15px; letter-spacing: 0; }
+.cyoa-close:active { color: #d6d4cc; }
+
+.cyoa-tab { cursor: pointer; }
+.cyoa-tab.active { color: #d6d4cc; }
+.cyoa-tab:active { color: #d6d4cc; }
+
+/* scrolling body */
+.cyoa-body {
+    flex: 1 1 auto; overflow-y: auto;
+    padding: 26px 22px 32px;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* stat strip */
+.cyoa-statbar {
+    display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;
+    margin-bottom: 22px;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #7d7b73;
+}
+.cyoa-stat b { color: #c0bdb2; font-weight: normal; }
+
+/* location header */
+.cyoa-loc {
+    text-align: center;
+    font-size: 22px; letter-spacing: 1px;
+    color: #cfae6e;                       /* warm gilt, like the title plates */
+    font-variant: small-caps;
+    margin: 4px 0 0;
+}
+
+/* ornament divider — the signature mark */
+.cyoa-orn {
+    text-align: center; color: #4a4a50; letter-spacing: 4px;
+    font-size: 13px; margin: 16px 0;
+    user-select: none;
+}
+
+/* prose */
+.cyoa-prose {
+    font-size: 17px; line-height: 1.7; color: #cdcabf;
+    max-width: 60ch; margin: 0 auto;
+}
+.cyoa-img {
+    display: block; margin: 18px auto 0; max-width: 320px; width: 100%;
+    border: 1px solid #26262b; border-radius: 3px;
+}
+
+/* choices — guillemet links, generous tap targets */
+.cyoa-choices { margin-top: 8px; }
+.cyoa-choice {
+    text-align: center; cursor: pointer;
+    color: #6fa3c0; font-size: 16px;
+    padding: 13px 8px; min-height: 22px;
+}
+.cyoa-choice:active { color: #9fc8e0; }
+.cyoa-choice.locked { color: #4f4d47; cursor: default; }
+.cyoa-lock {
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #b08a3c; margin-top: 3px;       /* amber, only for locks/warnings */
+}
+
+/* journal / inventory lists */
+.cyoa-list { max-width: 48ch; margin: 0 auto; }
+.cyoa-row {
+    padding: 12px 6px; border-bottom: 1px solid #1a1a1e;
+    color: #c0bdb2; font-size: 15px; text-align: center; cursor: pointer;
+}
+.cyoa-row:active { color: #fff; }
+.cyoa-empty { text-align: center; color: #6a685f; padding: 20px 0; font-style: italic; }
+
+/* FAB — top/left only, never bottom/right (suite rule) */
+#cyoa-fab {
+    position: fixed; top: 8px; left: 8px;
+    width: 38px; height: 38px;
+    border: none; border-radius: 50%;
+    background: #1a1a1e; color: #cfae6e;
+    font-size: 16px; cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+#cyoa-fab:active { background: #26262b; }
+
+/* takeover: lock background scroll while the shell owns the screen */
+body.cyoa-lock { overflow: hidden !important; }

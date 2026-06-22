@@ -1,0 +1,11 @@
+{
+    "display_name": "CYOA Shell",
+    "loading_order": 110,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "sinnerconsort",
+    "version": "0.2.1",
+    "homePage": ""
+}
