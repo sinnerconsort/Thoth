@@ -1,11 +1,11 @@
 {
-    "display_name": "CYOA Shell",
+    "display_name": "Palimpsest",
     "loading_order": 110,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
     "author": "sinnerconsort",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "homePage": ""
 }

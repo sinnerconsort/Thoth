@@ -1,5 +1,5 @@
 /* =============================================================================
- * CYOA Shell v0.3.0  —  standalone gamebook shell for SillyTavern
+ * Palimpsest v0.3.0  —  standalone gamebook shell for SillyTavern
  * -----------------------------------------------------------------------------
  * v0.3.0 — THE NODE LIFT
  *   - Story content moved OUT of code into ./story.json. Edit the story without
@@ -21,18 +21,18 @@
  * transforms), 100vw/100vh, three entry points, receipts, per-chat state.
  * ========================================================================== */
 
-const NS = "cyoa-shell";
+const NS = "palimpsest";
 const Z  = 31000;
 let DEBUG = true;            // <- set false once happy; gates diagnostic toasts
-const VER = '0.3.0';
+const VER = '0.4.0';
 
 function getCtx() {
     try { return SillyTavern.getContext(); }
     catch (e) { return window.SillyTavern?.getContext?.() || null; }
 }
-function dbg(msg) { if (DEBUG) try { toastr.info(msg, 'CYOA'); } catch (e) {} }
-function err(msg) { try { toastr.error(msg, 'CYOA', { timeOut: 9000 }); } catch (e) {} }
-function warn(msg){ try { toastr.warning(msg, 'CYOA', { timeOut: 9000 }); } catch (e) {} }
+function dbg(msg) { if (DEBUG) try { toastr.info(msg, 'Palimpsest'); } catch (e) {} }
+function err(msg) { try { toastr.error(msg, 'Palimpsest', { timeOut: 9000 }); } catch (e) {} }
+function warn(msg){ try { toastr.warning(msg, 'Palimpsest', { timeOut: 9000 }); } catch (e) {} }
 
 /* ----------------------------------------------------------------------------
  * STORY (data) — loaded from story.json, never hardcoded.
@@ -127,7 +127,7 @@ async function commitReceipt(node, choiceLabel) {
     const tail = choiceLabel ? `\n\n→ *${choiceLabel}*` : '';
     const msg = { name: c.name2 || 'Story', is_user: false,
         mes: `〔${node.location}〕\n\n${node.prose}${tail}`,
-        send_date: Date.now(), extra: { [NS]: true, cyoaPage: node.id } };
+        send_date: Date.now(), extra: { [NS]: true, palimpsestPage: node.id } };
     c.chat.push(msg);
     try { await c.saveChat?.(); } catch (e) {}
     try { c.addOneMessage?.(msg); } catch (e) {}
@@ -209,11 +209,11 @@ async function improvise(seedLabel) {
  * RENDER
  * -------------------------------------------------------------------------- */
 let activeTab = 'story';
-const ORN = '<div class="cyoa-orn">&gt;—&lt;&nbsp;&nbsp;&gt;—&lt;&nbsp;&nbsp;&gt;—&lt;</div>';
+const ORN = '<div class="palimpsest-orn">&gt;—&lt;&nbsp;&nbsp;&gt;—&lt;&nbsp;&nbsp;&gt;—&lt;</div>';
 
 function statBar() {
     const v = state.vars;
-    const cell = (l, val) => '<span class="cyoa-stat">' + l + ' <b>[' + val + ']</b></span>';
+    const cell = (l, val) => '<span class="palimpsest-stat">' + l + ' <b>[' + val + ']</b></span>';
     const cells = [];
     if (v.stamina != null)  cells.push(cell('STAMINA', v.stamina + '/5'));
     if (v.vitality != null) cells.push(cell('VITALITY', v.vitality + '/' + (v.vitalityMax ?? '?')));
@@ -221,7 +221,7 @@ function statBar() {
         const mod = statusModifier('defense');
         cells.push(cell('DEFENSE', mod ? (v.defense + mod) + ' (' + (mod > 0 ? '+' : '') + mod + ')' : v.defense));
     }
-    let html = '<div class="cyoa-statbar">' + cells.join('') + '</div>';
+    let html = '<div class="palimpsest-statbar">' + cells.join('') + '</div>';
     if (state.statuses && state.statuses.length) {
         const chips = state.statuses.map(id =>
             '<span style="display:inline-block;padding:2px 9px;margin:0 4px;border:1px solid #3a3a40;border-radius:11px;font-size:11px;letter-spacing:1.5px;color:#b9b6ab;">'
@@ -233,62 +233,62 @@ function statBar() {
 
 function storyView() {
     const node = nodeById(state.current) || nodeById(STORY.start);
-    if (!node) return '<div class="cyoa-empty">No story loaded.</div>';
+    if (!node) return '<div class="palimpsest-empty">No story loaded.</div>';
     const choices = node.choices.map((ch, i) => {
         const lock = lockReason(ch);
         return lock !== true
-            ? '<div class="cyoa-choice locked">« ' + ch.label + ' »<div class="cyoa-lock">' + lock + '</div></div>'
-            : '<div class="cyoa-choice" data-i="' + i + '">« ' + ch.label + ' »</div>';
+            ? '<div class="palimpsest-choice locked">« ' + ch.label + ' »<div class="palimpsest-lock">' + lock + '</div></div>'
+            : '<div class="palimpsest-choice" data-i="' + i + '">« ' + ch.label + ' »</div>';
     }).join('');
     return statBar()
-        + '<div class="cyoa-loc">' + node.location + '</div>' + ORN
-        + '<div class="cyoa-prose">' + node.prose + '</div>'
-        + (node.image ? '<img class="cyoa-img" src="' + node.image + '">' : '') + ORN
-        + '<div class="cyoa-choices">' + choices + '</div>';
+        + '<div class="palimpsest-loc">' + node.location + '</div>' + ORN
+        + '<div class="palimpsest-prose">' + node.prose + '</div>'
+        + (node.image ? '<img class="palimpsest-img" src="' + node.image + '">' : '') + ORN
+        + '<div class="palimpsest-choices">' + choices + '</div>';
 }
 function journalView() {
     const rows = state.history.length
-        ? state.history.map(id => '<div class="cyoa-row">' + (nodeById(id)?.location || id) + '</div>').join('')
-        : '<div class="cyoa-empty">No pages turned yet.</div>';
-    return '<div class="cyoa-loc">Journal</div>' + ORN + '<div class="cyoa-list">' + rows + '</div>';
+        ? state.history.map(id => '<div class="palimpsest-row">' + (nodeById(id)?.location || id) + '</div>').join('')
+        : '<div class="palimpsest-empty">No pages turned yet.</div>';
+    return '<div class="palimpsest-loc">Journal</div>' + ORN + '<div class="palimpsest-list">' + rows + '</div>';
 }
 function inventoryView() {
     const rows = state.inventory.length
-        ? state.inventory.map(id => '<div class="cyoa-row">' + itemName(id) + '</div>').join('')
-        : '<div class="cyoa-empty">Empty.</div>';
-    return '<div class="cyoa-loc">Inventory</div>' + ORN + '<div class="cyoa-list">' + rows + '</div>';
+        ? state.inventory.map(id => '<div class="palimpsest-row">' + itemName(id) + '</div>').join('')
+        : '<div class="palimpsest-empty">Empty.</div>';
+    return '<div class="palimpsest-loc">Inventory</div>' + ORN + '<div class="palimpsest-list">' + rows + '</div>';
 }
 function settingsView() {
     const SUITE = ['LexiconAPI', 'CodexAPI', 'ChroniclerAPI', 'FortunaAPI', 'VoiceAPI'];
     const present = n => !!(getCtx()?.[n] || window?.[n]);
     const suite = SUITE.map(n => { const on = present(n); const nm = n.replace('API', '');
-        return '<div class="cyoa-row" style="cursor:default">' + nm + ' <b style="color:' + (on ? '#7fae6e' : '#6a685f') + '">' + (on ? '✓ detected' : '— not present') + '</b></div>'; }).join('');
-    return '<div class="cyoa-loc">Settings</div>' + ORN
-        + '<div class="cyoa-list">'
-        + '<div class="cyoa-row" id="cyoa-reload">⟳ Reload story.json</div>'
-        + '<div class="cyoa-empty">Story: ' + (STORY?.title || '—') + ' · v' + VER + '</div>'
-        + '<div class="cyoa-empty">Optional suite integrations — the shell runs without any.</div>'
+        return '<div class="palimpsest-row" style="cursor:default">' + nm + ' <b style="color:' + (on ? '#7fae6e' : '#6a685f') + '">' + (on ? '✓ detected' : '— not present') + '</b></div>'; }).join('');
+    return '<div class="palimpsest-loc">Settings</div>' + ORN
+        + '<div class="palimpsest-list">'
+        + '<div class="palimpsest-row" id="palimpsest-reload">⟳ Reload story.json</div>'
+        + '<div class="palimpsest-empty">Story: ' + (STORY?.title || '—') + ' · v' + VER + '</div>'
+        + '<div class="palimpsest-empty">Optional suite integrations — the shell runs without any.</div>'
         + suite
-        + '<div class="cyoa-row" id="cyoa-reset">↺ Reset this story</div>'
+        + '<div class="palimpsest-row" id="palimpsest-reset">↺ Reset this story</div>'
         + '</div>';
 }
 
 function render() {
-    const $body = document.getElementById('cyoa-body'); if (!$body) return;
+    const $body = document.getElementById('palimpsest-body'); if (!$body) return;
     $body.innerHTML = activeTab === 'journal' ? journalView()
         : activeTab === 'inventory' ? inventoryView()
         : activeTab === 'settings' ? settingsView() : storyView();
-    $body.querySelectorAll('.cyoa-choice[data-i]').forEach(el => el.addEventListener('click', () => {
+    $body.querySelectorAll('.palimpsest-choice[data-i]').forEach(el => el.addEventListener('click', () => {
         const ch = nodeById(state.current).choices[Number(el.dataset.i)];
         if (ch.emergent) improvise(ch.label);
         else if (ch.goto) goTo(ch.goto, ch);
-        else toastr.warning('No destination yet.', 'CYOA');
+        else toastr.warning('No destination yet.', 'Palimpsest');
     }));
-    const reset = document.getElementById('cyoa-reset');
+    const reset = document.getElementById('palimpsest-reset');
     if (reset) reset.addEventListener('click', () => { state = FRESH(); persist(); activeTab = 'story'; render(); dbg('Story reset.'); });
-    const reload = document.getElementById('cyoa-reload');
+    const reload = document.getElementById('palimpsest-reload');
     if (reload) reload.addEventListener('click', async () => { await loadStory(); loadState(); render(); dbg('Reloaded ' + (STORY?.title || 'story') + '.'); });
-    document.querySelectorAll('.cyoa-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === activeTab));
+    document.querySelectorAll('.palimpsest-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === activeTab));
 }
 
 /* ----------------------------------------------------------------------------
@@ -300,17 +300,17 @@ function hideChrome() {
     hiddenChrome = [];
     CHROME.forEach(sel => { const el = document.querySelector(sel);
         if (el && el.style.display !== 'none') { hiddenChrome.push([el, el.style.display]); el.style.display = 'none'; } });
-    document.body.classList.add('cyoa-lock');
+    document.body.classList.add('palimpsest-lock');
 }
 function restoreChrome() {
     hiddenChrome.forEach(([el, d]) => { el.style.display = d || ''; });
-    hiddenChrome = []; document.body.classList.remove('cyoa-lock');
+    hiddenChrome = []; document.body.classList.remove('palimpsest-lock');
 }
 
 function buildShell() {
-    document.getElementById('cyoa-overlay')?.remove();
+    document.getElementById('palimpsest-overlay')?.remove();
     const overlay = document.createElement('div');
-    overlay.id = 'cyoa-overlay';
+    overlay.id = 'palimpsest-overlay';
     overlay.style.cssText =
         'position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;' +
         'z-index:' + (Z + 1) + ';display:flex;flex-direction:column;' +
@@ -319,16 +319,16 @@ function buildShell() {
                 'font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#8a8880;';
     overlay.innerHTML =
         '<div style="' + bar + 'justify-content:space-between;border-bottom:1px solid #1c1c20;">' +
-            '<span>KENAM MOORWAK · v' + VER + '</span><span id="cyoa-close" style="cursor:pointer;letter-spacing:0;">✕</span></div>' +
-        '<div id="cyoa-body" style="flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;' +
+            '<span>' + (STORY?.title || 'Palimpsest') + ' · v' + VER + '</span><span id="palimpsest-close" style="cursor:pointer;letter-spacing:0;">✕</span></div>' +
+        '<div id="palimpsest-body" style="flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;' +
             'padding:26px 22px 40px;width:100%;max-width:680px;margin:0 auto;box-sizing:border-box;"></div>' +
         '<div style="' + bar + 'justify-content:center;gap:28px;border-top:1px solid #1c1c20;">' +
-            '<span class="cyoa-tab" data-tab="journal" style="cursor:pointer;">JOURNAL</span>' +
-            '<span class="cyoa-tab" data-tab="inventory" style="cursor:pointer;">INVENTORY</span>' +
-            '<span class="cyoa-tab" data-tab="settings" style="cursor:pointer;">SETTINGS</span></div>';
+            '<span class="palimpsest-tab" data-tab="journal" style="cursor:pointer;">JOURNAL</span>' +
+            '<span class="palimpsest-tab" data-tab="inventory" style="cursor:pointer;">INVENTORY</span>' +
+            '<span class="palimpsest-tab" data-tab="settings" style="cursor:pointer;">SETTINGS</span></div>';
     document.body.appendChild(overlay);
-    document.getElementById('cyoa-close')?.addEventListener('click', closeShell);
-    overlay.querySelectorAll('.cyoa-tab').forEach(t => t.addEventListener('click', () => {
+    document.getElementById('palimpsest-close')?.addEventListener('click', closeShell);
+    overlay.querySelectorAll('.palimpsest-tab').forEach(t => t.addEventListener('click', () => {
         activeTab = (activeTab === t.dataset.tab) ? 'story' : t.dataset.tab; render();
     }));
 }
@@ -337,27 +337,27 @@ function openShell() {
         dbg('opening…');
         buildShell(); loadState(); hideChrome();
         activeTab = 'story';
-        document.getElementById('cyoa-overlay').style.display = 'flex';
+        document.getElementById('palimpsest-overlay').style.display = 'flex';
         try { render(); } catch (e) { err('Render failed: ' + (e?.message || e)); }
     } catch (e) { err('Open failed: ' + (e?.message || e)); }
 }
-function closeShell() { const o = document.getElementById('cyoa-overlay'); if (o) o.style.display = 'none'; restoreChrome(); }
-function toggleShell() { const o = document.getElementById('cyoa-overlay'); (o && o.style.display !== 'none') ? closeShell() : openShell(); }
+function closeShell() { const o = document.getElementById('palimpsest-overlay'); if (o) o.style.display = 'none'; restoreChrome(); }
+function toggleShell() { const o = document.getElementById('palimpsest-overlay'); (o && o.style.display !== 'none') ? closeShell() : openShell(); }
 
 function buildFAB() {
-    document.getElementById('cyoa-fab')?.remove();
+    document.getElementById('palimpsest-fab')?.remove();
     const fab = document.createElement('button');
-    fab.id = 'cyoa-fab'; fab.title = 'Open CYOA'; fab.style.zIndex = Z;
+    fab.id = 'palimpsest-fab'; fab.title = 'Open Palimpsest'; fab.style.zIndex = Z;
     fab.innerHTML = '<i class="fa-solid fa-book-open"></i>';
     document.body.appendChild(fab);
     fab.addEventListener('click', () => { dbg('FAB tapped'); toggleShell(); });
 }
 function buildWand() {
     const menu = document.getElementById('extensionsMenu');
-    if (!menu || document.getElementById('cyoa-wand')) return;
+    if (!menu || document.getElementById('palimpsest-wand')) return;
     const item = document.createElement('div');
-    item.id = 'cyoa-wand'; item.className = 'list-group-item flex-container flexGap5 interactable'; item.tabIndex = 0;
-    item.innerHTML = '<i class="fa-solid fa-book-open"></i><span>CYOA Shell</span>';
+    item.id = 'palimpsest-wand'; item.className = 'list-group-item flex-container flexGap5 interactable'; item.tabIndex = 0;
+    item.innerHTML = '<i class="fa-solid fa-book-open"></i><span>Palimpsest</span>';
     item.addEventListener('click', () => { dbg('wand tapped'); toggleShell(); });
     menu.appendChild(item);
 }
@@ -365,13 +365,13 @@ function registerSlash(c) {
     try {
         if (c?.SlashCommandParser?.addCommandObject && c?.SlashCommand?.fromProps) {
             c.SlashCommandParser.addCommandObject(c.SlashCommand.fromProps({
-                name: 'cyoa', callback: () => { toggleShell(); return ''; }, helpString: 'Toggle the CYOA shell' }));
+                name: 'palimpsest', aliases: ['cyoa'], callback: () => { toggleShell(); return ''; }, helpString: 'Toggle Palimpsest' }));
             return 'modern';
         }
     } catch (e) {}
     try {
         if (typeof c?.registerSlashCommand === 'function') {
-            c.registerSlashCommand('cyoa', () => { toggleShell(); }, [], 'Toggle the CYOA shell', true, true);
+            c.registerSlashCommand('palimpsest', () => { toggleShell(); }, ['cyoa'], 'Toggle Palimpsest', true, true);
             return 'legacy';
         }
     } catch (e) {}
@@ -388,11 +388,11 @@ jQuery(async () => {
         if (c?.eventSource?.on && c?.event_types?.CHAT_CHANGED) {
             c.eventSource.on(c.event_types.CHAT_CHANGED, () => {
                 loadState();
-                if (document.getElementById('cyoa-overlay')?.style.display === 'flex') render();
+                if (document.getElementById('palimpsest-overlay')?.style.display === 'flex') render();
             });
         }
     } catch (e) {}
     const slash = registerSlash(c);
     if (DEBUG) dbg('loaded v' + VER + ' (story: ' + (STORY?.title || 'fallback') + ', slash: ' + slash + ')');
-    console.log('[cyoa-shell] ✅ loaded v' + VER + '; slash=' + slash);
+    console.log('[palimpsest] ✅ loaded v' + VER + '; slash=' + slash);
 });
