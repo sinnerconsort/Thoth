@@ -24,7 +24,7 @@
 const NS = "palimpsest";
 const Z  = 31000;
 let DEBUG = true;            // <- set false once happy; gates diagnostic toasts
-const VER = '0.9.0';
+const VER = '0.9.1';
 
 function getCtx() {
     try { return SillyTavern.getContext(); }
@@ -319,8 +319,9 @@ function subjectBlock() {
     if (f.first_mes)   { const v = charField('first_mes');   if (v) parts.push('Canonical opening (reference only — do NOT replay it): ' + v); }
     const body = parts.length ? '\n' + parts.join('\n') : '';
     return 'THE TELLING CONCERNS: ' + name + body
-        + '\n(Honor the established world and its races, customs, and details EXACTLY as written above — do not ignore them or invent vague substitutes. '
-        + 'Center the opening on ' + name + ', present or strongly implied; do NOT introduce a new named character to stand in for them.)';
+        + '\n(This is the established world: treat its races, customs, and details as TRUE — never contradict them, and when one of them appears, render it specifically rather than a vague substitute. '
+        + 'But this is a PALETTE to draw on as the scene naturally calls for it, NOT a checklist — not every race or element needs to appear, and an ordinary, quiet moment true to the world is welcome. '
+        + 'Build around ' + name + ' where it fits; do not introduce a new named character to stand in for them.)';
 }
 
 /* Optional Lexicon seeds — Spark's pattern, now framed as belonging to the subject. */
